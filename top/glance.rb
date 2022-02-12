@@ -45,7 +45,7 @@ class Glance
 
   def collect
     collect_battery
-    collect_temperature
+    # collect_temperature
     collect_bluetooth
     collect_storage
   end
@@ -54,7 +54,11 @@ class Glance
   def collect_temperature
     return if @actor
 
-    command = %Q{./bin/smc -k #{SMC_KEYS.keys.join(',')} -r -c}
+    # command = %Q{./bin/smc -k #{SMC_KEYS.keys.join(',')} -r -c}
+
+    command = %Q{./bin/smc_c/smc -t}
+
+    print Glance.sh(command)
 
     profiler = eval("{#{Glance.sh(command).stdout}}")
 
@@ -179,16 +183,16 @@ class Glance
       is_external      = device['ExternalConnected']
       time_to_full     = device['AvgTimeToFull']
       time_to_empty    = device['AvgTimeToEmpty']
-      manufacture_date = device['ManufactureDate']
+      # manufacture_date = device['ManufactureDate']
 
 
-      day = manufacture_date & 31
-      month = (manufacture_date >> 5 ) & 15
-      year = 1980 + (manufacture_date >> 9)
+      # day = manufacture_date & 31
+      # month = (manufacture_date >> 5 ) & 15
+      # year = 1980 + (manufacture_date >> 9)
 
-      manufacture_date = Date.new(year, month, day)
+      # manufacture_date = Date.new(year, month, day)
       # month as unit
-      age = (Date.today - manufacture_date).to_f / 30
+      # age = (Date.today - manufacture_date).to_f / 30
 
       health  = max_capacity * 100 / design_capacity
       percent = current_capacity * 100 / max_capacity
@@ -276,11 +280,11 @@ class Glance
           :match? => :all_title_match?,
           :icon => {:type => "default", :name => "icon/battery/serial.png"}
         )
-        @feedback.add_item(
-          :title => "#{age.round} months",
-          :subtitle => 'Age',
-          :icon => {:type => "default", :name => "icon/battery/age.png"}
-        )
+        # @feedback.add_item(
+        #   :title => "#{age.round} monthes",
+        #   :subtitle => 'Age',
+        #   :icon => {:type => "default", :name => "icon/battery/age.png"}
+        # )
       else
         @feedback.add_item(battery_item)
       end
